@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.dao.SelectDetailDao">
+	<!-- 根据景点名和地区名 -->
+	<select id="selectDetail" resultMap="baseattractions">
+		select * from tbl_attractions as a join tbl_beat as b
+		on a.beat_id=b.beat_id
+		<where>
+			<if test="attractions_name!=null and attractions_name!=''">
+				and a.attractions_name like concat('%',#{attractions_name},'%')
+			</if>
+			<if test="beat_name!=null and beat_name!=''">
+				and b.beat_name like concat('%',#{beat_name},'%')
+			</if>		
+		</where>
+	</select>
+	<!-- 根据热度进行排序显示景点 -->
+	<select id="getAttractionsByhot" resultMap="baseattractions">
+		select * from tbl_attractions ORDER BY attractions_hot desc limit 4
+	</select>
+	
+	<resultMap type="attractions" id="baseattractions">
+		<id column="attractions_id" property="attractions_id"/>
+		<result column="attractions_name" property="attractions_name"/>
+		<result column="attractions_hot" property="attractions_hot"/>
+		<result column="attractions_img" property="attractions_img"/>
+		<result column="attractions_introduce" property="attractions_introduce"/>
+		<result column="attractions_commentNum" property="attractions_commentNum"/>
+		<association property="beat" javaType="beat">
+			<id column="beat_id" property="beat_id"/>
+			<result column="beat_name" property="beat_name"/>
+			<result column="beat_img" property="beat_img"/>
+			<result column="beat_introduce" property="beat_introduce"/>
+		</association>
+	</resultMap>
+</mapper>

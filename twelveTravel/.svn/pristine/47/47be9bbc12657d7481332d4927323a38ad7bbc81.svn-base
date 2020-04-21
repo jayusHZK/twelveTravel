@@ -1,0 +1,14 @@
+package com.travel.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.travel.po.Attractions;
+import com.travel.po.Result;
+
+public interface SelectDetailDao {
+	//根据景点名和地点查询景点
+	Result selectDetail(Map map);
+	//根据景点热度给出推荐
+	List<Attractions> getAttractionsByhot();
+}

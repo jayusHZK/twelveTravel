@@ -1,0 +1,41 @@
+package com.travel.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.travel.po.Result;
+import com.travel.service.StrateService;
+
+
+@Controller
+@RequestMapping("/strate")
+public class StrateController {
+	@Autowired
+	private StrateService strateService;
+	/***
+	 * 进入添加攻略页面
+	 * @param m
+	 * @param beat_id 城市id
+	 * @return
+	 */
+	@RequestMapping("/toaddstrate")
+	public String toAddStrate(Model m,Integer beat_id){
+		m.addAttribute("beatO", strateService.getBeatByID(beat_id));
+		return "/strate/addStrate";
+	}
+	/***
+	 * 
+	 * @param user_id 用户id
+	 * @param beat_id 城市id
+	 * @param txt 攻略内容
+	 * @return
+	 */
+	@RequestMapping("/addstrate")
+	@ResponseBody
+	public Result addStrate(Integer user_id,Integer beat_id,String txt,String title){
+		return strateService.addStrate(user_id, beat_id, txt,title);
+	}
+}

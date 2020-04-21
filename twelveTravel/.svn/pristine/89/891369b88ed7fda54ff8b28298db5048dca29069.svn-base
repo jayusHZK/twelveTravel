@@ -1,0 +1,256 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>添加用户</title>
+<link href="/twelveTravel/css/style.css" rel="stylesheet"
+	type="text/css" />
+<script type='text/javascript' src='/twelveTravel/js/jquery-1.10.2.js'></script>
+<script type='text/javascript' src='/twelveTravel/js/ajaxfileupload.js'></script>
+</head>
+
+<body>
+
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">景点模块</a></li>
+			<li><a href="#">添加景点</a></li>
+		</ul>
+	</div>
+
+	<div class="formbody">
+
+		<div class="formtitle">
+			<span>基本信息</span>
+		</div>
+		<form >
+			<ul class="forminfo">
+				<li><label>景点名称</label><input name="attractions_name" id="attractions_name"
+					type="text" value="${attractionsInfo.attractions_name }"
+					class="dfinput" /><i></i></li>
+				<li><label>国家</label><select id="cou" class="dfinput" style="width: 150px" name=""  onchange="conuntryChange()"> 
+					<option>请选择</option>
+					<c:forEach items="${conlist}" var="item">
+			     		<option value="${item.country_id}">${item.country_name}</option>
+			     	</c:forEach>     	
+			    </select>
+    		</li>
+    
+    <li><label>省</label><select id="pro" class="dfinput" style="width: 150px" name="province_id"> 
+		 	
+    </select></li>
+				      <li><label>城市</label><select id="beat" class="dfinput" style="width: 150px" name="beat_name"> 
+			
+    </select>
+				<li><label>简介</label> <textarea  onblur="" onfocus="" id="clicktitle" rows="10"
+						cols="47"  name="attractions_introduce" placeholder="简介至少五十个字"></textarea>
+					<i id="showtitle" style="display: none;margin-left: 79px">简介不合格</i>
+					<i id="showtitle1" style="display: none;margin-left: 79px">简介字数少于50字</i>
+				</li>
+				<li><label>景点图片</label><input name="fileList" id="fileList"
+					type="file" class="" /><i></i> <input type="button" value="确认上传" class="btn" id="upload" /> 
+					<input type="hidden" name="attractions_img"  id="attractions_img"/></li>
+				<input type="hidden" name="attractions_id" value="${attractionsInfo.attractions_id }" />
+				<li><label>&nbsp;</label><input type="button" class="btn" id="submit"
+					value="确认保存" /></li>
+			</ul>
+		</form>
+
+		<div class="tip">
+			<div class="tiptop">
+				<span>提示信息</span><a></a>
+			</div>
+
+			<div class="tipinfo">
+				<span><img src="/twelveTravel/images/ticon.png" /></span>
+				<div class="tipright">
+					<p>上传成功</p>
+					<cite></cite>
+				</div>
+			</div>
+
+			<div class="tipbtn">
+				<input name="" type="button" class="sure" value="确定" />&nbsp; <input
+					name="" type="button" class="cancel" value="取消" />
+			</div>
+		</div>
+
+	</div>
+
+
+	<script type="text/javascript">
+		function uploadimg() {
+			$.ajaxFileUpload({
+				url : "/twelveTravel/file/upload",
+				type : "post",
+				dataType : "text",
+				fileElementId : "fileList",//表示上传文件input的id
+				secureuri : false,//表示不已安全协议发送
+				success : function(data) {
+					console.log(data);
+					var json = data.replace(/<.*?>/ig, "");
+					var newdata = JSON.parse(json);
+					if (newdata.code == 200) {
+						$("[name='attractions_img']").val(newdata.msg);
+					} else {
+						alert("失败");
+					}
+				}
+			});
+		}
+
+		
+
+		$(function() {
+		
+						
+				$("#submit").click(function(){
+				//获取参数
+				var data={};
+				data.attractions_name=$("#attractions_name").val();
+				data.attractions_img=$("#attractions_img").val();
+				data.attractions_introduce=$("#clicktitle").val();
+				data.beat_id=$("#beat").val();
+				data.province_id=$("#pro").val();
+				data.country_id=$("#cou").val();
+					$.ajax({
+						url:"/twelveTravel/attractions/addattractions",
+						data:data,
+						type:"post",
+						dataType:"json",
+						success:function(data){
+		    				console.log(data);
+		    				if(data.code!=0){
+		    					location.href="/twelveTravel/attractions/toattractionslist";
+		    				}
+		    			}
+					});	  
+				});
+			
+			//上传图片的点击事件
+			$("#upload").click(function() {
+				//执行上传图片的方法
+				uploadimg();
+			});
+
+			//点击上传图片按钮显示提示框
+			$("#upload").click(function() {
+				$(".tip").fadeIn(200);
+			});
+
+			$(".tiptop a").click(function() {
+				$(".tip").fadeOut(200);
+			});
+
+			$(".sure").click(function() {
+				$(".tip").fadeOut(100);
+			});
+
+			$(".cancel").click(function() {
+				$(".tip").fadeOut(100);
+			});
+			
+			$("#cou").change(function(){
+	    		var country_id=$(this).val();
+	    		conuntryChange(country_id);
+    		});
+    	$("#pro").change(function(){
+	    		var beat_id=$(this).val();
+	    		beatChange(beat_id);
+    	});
+    	
+    	function  check(){
+    	  if($("#attractions_img").val()==undefined||$("#attractions_img").val()==''){
+	    	   alert("请先选择文件进行上传!");
+	    	   return  false;
+	    	  
+	    	}
+    	 
+    	}
+    	
+    	
+    	function  conuntryChange(id){
+    	   		$.ajax({
+				url:"/twelveTravel/attractions/toaddprov",
+				data:{country_id:id},
+				type:"get",
+				dataType:"json",
+				success:function(data){
+					console.log(data);
+					var html="";
+					html+="<option>请选择</option>";
+					$(data.msg).each(function(){
+						 html+="<option value="+this.province_id+">"+this.province_name+"</option>";
+					});
+					$("#pro").empty().append(html);
+				
+					
+					}
+					
+					});
+    	
+    	}
+    	
+    	
+    	
+    	function  beatChange(id){
+    	   		$.ajax({
+				url:"/twelveTravel/attractions/toaddbeatv",
+				data:{province_id:id},
+				type:"get",
+				dataType:"json",
+				success:function(data){
+					console.log(data);
+					var html="";
+					html+="<option>请选择</option>";
+					$(data.msg).each(function(){
+						 html+="<option value="+this.beat_id+">"+this.beat_name+"</option>";
+					});				
+					$("#beat").empty().append(html);									
+					}	
+				});			
+
+
+						
+		}
+			
+				//判断简介的合法性
+				//失去焦点时
+				$("#clicktitle").blur(function(){		
+					//如果简介大于等于50字则合格	
+					if ( $("#clicktitle").val().length >= 50) {
+						$("#showtitle").toggle(function() {
+							$("#showtitle").css("display", "none");
+							$("#showtitle1").css("display", "none");
+						});
+					}
+				});
+				$("#clicktitle").blur(function(){			
+					//如果简介小于50字并且不为空时
+					//则提示  简介字数小于50字
+					if ($("#clicktitle").val().length < 50  && $("#clicktitle").val().length != "") {
+						$("#showtitle1").toggle(function() {
+							$("#showtitle1").css("display", "block");
+						});
+					}
+				});
+				//失去焦点时 如果文本框的val值为空
+				//则提示   简介填写不合格
+				$("#clicktitle").blur(function(){			
+					if ($("#clicktitle").val().length == "") {
+						$("#showtitle").toggle(function() {
+							$("#showtitle").css("display", "block");
+						});
+					}
+				});
+			
+			//默认下拉框的值为  请选择
+			$("#dp").find("option:contains('请选择')").attr("selected", true);
+
+		});
+	</script>
+</body>
+</html>

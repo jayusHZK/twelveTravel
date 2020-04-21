@@ -1,0 +1,104 @@
+package com.travel.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.support.DaoSupport;
+import org.springframework.stereotype.Service;
+
+import com.travel.dao.ChangeDetailDao;
+import com.travel.po.Beat;
+import com.travel.po.Country;
+import com.travel.po.Province;
+import com.travel.po.Result;
+import com.travel.po.ResultPage;
+import com.travel.service.ChangeDetailService;
+
+@Service
+public class ChangeDetailServiceImpl implements ChangeDetailService {
+	@Autowired
+	private ChangeDetailDao detailDao;
+
+	@Override
+	public Beat getBeatById(Integer beat_id) {
+		// TODO Auto-generated method stub
+		return detailDao.getBeatById(beat_id);
+	}
+	/***
+	 * �����
+	 */
+	@Override
+	public int toaddbeat(Beat beat) {
+		// TODO Auto-generated method stub
+		return detailDao.toaddbeat(beat);
+	}
+	/***
+	 *�����б�
+	 */
+	@Override
+
+	public Result getBeatList1(Integer province_id) {
+		Result r=new Result();
+		r.setMsg(detailDao.getBeatList1(province_id));
+		return r;
+	}
+
+	@Override
+	public Result getProvinceList(Integer country_id) {
+		// TODO Auto-generated method stub
+		Result r=new Result();
+		r.setMsg(detailDao.getProvinceList(country_id));
+		return r;
+	}
+	@Override
+	public List<Country> getCountryList() {
+		// TODO Auto-generated method stub
+		return detailDao.getCountryList();
+	}
+	/**
+	 * 分页查询
+	 * @param index 当前第几页
+	 */
+	public ResultPage getBeatList(Integer index, String beat_name,
+			String province_name) {
+		ResultPage rp=new ResultPage();
+		rp.setSize(10);
+		rp.setIndex(index);
+		
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("start", (index-1)*rp.getSize());
+		map.put("end",rp.getSize());
+		map.put("beat_name", beat_name);
+		map.put("province_name", province_name);
+		rp.setObj(detailDao.getBeatListByIndex(map));
+		
+		rp.setCount(detailDao.getBeatListCount(map).intValue());
+		
+		rp.setPageCount((int)Math.ceil((double)rp.getCount()/rp.getSize()));
+		
+		return rp;
+	}
+	/***
+	 * �б��������
+	 */
+	@Override
+	public Long getBeatListCount(Map map) {		
+		return detailDao.getBeatListCount(map);
+	}
+	@Override
+	public int delBeat(Integer beat_id) {
+		
+		return detailDao.delBeat(beat_id);
+	}
+	@Override
+	public List<Beat> getBeatListByIndex(Object obj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	
+	
+}

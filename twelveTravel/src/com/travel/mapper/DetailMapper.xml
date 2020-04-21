@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.dao.DetailDao">
+	<!-- 根据id获取区域详情 -->
+	<select id="getBeatByID" parameterType="int" resultType="beat">
+		select * from tbl_beat where beat_id=#{beat_id}
+	</select>
+	<!-- 根据id获取景点集合 -->
+	<select id="getAttrList" parameterType="int" resultType="attractions">
+		select * from tbl_attractions where beat_id=#{beat_id} ORDER BY attractions_hot DESC limit 4
+	</select>
+	<!-- 区域浏览量+1 -->
+	<update id="beatHotNum" parameterType="int">
+		update tbl_beat set hotNum=hotNum+1 where beat_id=#{beat_id}
+	</update>
+	<!-- 获取区域评论总数 -->
+	<select id="getCommentCount" parameterType="int" resultType="int">
+		select count(1) from tbl_beat_comment where beat_id=#{beat_id}
+	</select>
+	<!-- 获取区域评论 -->
+	<select id="getBeatComment" parameterType="map" resultMap="beseBCU">
+		select * from tbl_beat_comment b join tbl_user u
+		on b.user_id=u.user_id
+		where b.beat_id=#{beat_id}
+		ORDER BY comment_time desc
+		limit #{index},#{size}
+	</select>
+	<!-- 获取景点详情 -->
+	<select id="getAttrByID" parameterType="int" resultType="attractions">
+		select * from tbl_attractions where attractions_id=#{attr_id}
+	</select>
+	<!-- 添加区域评论 -->
+	<insert id="addBeatComment" parameterType="map">
+		insert into tbl_beat_comment(beat_id,user_id,comment,comment_time) values(#{beat_id},#{user_id},#{txt},#{time})
+	</insert>
+	<!-- 添加景点热度数 -->
+	<update id="addAttrHot" parameterType="int">
+		update tbl_attractions set attractions_hot=attractions_hot+1 where attractions_id=#{attr_id}
+	</update>
+	<!-- 获取景点评论总数 -->
+	<select id="getAttrCommentCount" parameterType="int" resultType="int">
+		select count(1) from tbl_attr_comment where attr_id=#{attr_id}
+	</select>
+	<!-- 获取景点评论 -->
+	<select id="getAttrComment" parameterType="map" resultMap="baseACU">
+		select * from tbl_attr_comment c join tbl_user u on u.user_id=c.user_id
+		where c.attr_id=#{attr_id} ORDER BY c.comment_time DESC limit #{index},#{size}
+	</select>
+	<!-- 添加景点评论 -->
+	<insert id="addAttrComment" parameterType="map">
+		insert into tbl_attr_comment(comment,user_id,attr_id,comment_time) values(#{txt},#{user_id},#{attr_id},#{time})
+	</insert>
+	<!-- 景点攻略详情 -->
+	<select id="getStrateByID" parameterType="int" resultMap="baseSBU">
+		select * from tbl_strategy s join tbl_user u
+		on s.user_id=u.user_id
+		join tbl_beat b 
+		on s.beat_id=b.beat_id
+		where s.beat_id=#{beat_id} ORDER BY readimgNum desc limit 1
+	</select>
+	<!-- 攻略浏览量+1 -->
+	<update id="addStrateLeadNum" parameterType="int">
+		update tbl_strategy set readimgNum=readimgNum+1 where strategy_id=#{strate_id}
+	</update>
+	<!-- 添加区域评论总数 -->
+	<update id="addBeatCommentCount" parameterType="int">
+		update tbl_beat set commentNum=commentNum+1 where beat_id=#{beat_id}
+	</update>
+	<!-- 添加景点评论总数 -->
+	<update id="addAttrCommentCount" parameterType="int">
+		update tbl_attractions set attractions_commentNum=attractions_commentNum+1 where attractions_id=#{attr_id}
+	</update>
+	<!-- 获取攻略评论总数 -->
+	<select id="getStrateCommentCount" parameterType="int" resultType="int">
+		select count(1) from tbl_strategy_comment where strategy_id=#{strate_id}
+	</select>
+	<!-- 获取攻略评论 -->
+	<select id="getStrateComment" parameterType="map" resultMap="beseSCU">
+		select * from tbl_user u join tbl_strategy_comment s
+		on u.user_id=s.user_id
+		where s.strategy_id=#{strate_id}
+		ORDER BY s.time DESC
+		limit #{index},#{size}
+	</select>
+	<!-- 攻略列表页获取区域详情 -->
+	<select id="getBeatByIdS" parameterType="int" resultType="beat">
+		select * from tbl_beat where beat_id=#{beat_id}
+	</select>
+	<!-- 添加攻略评论 -->
+	<insert id="addStrateComment" parameterType="map">
+		insert into tbl_strategy_comment(comment_txt,user_id,strategy_id,time) values(#{txt},#{user_id},#{strate_id},#{time})
+	</insert>
+	<!-- 添加攻略评论总数 -->
+	<update id="addStrateCommentNum" parameterType="int">
+		update tbl_strategy set commentNum=commentNum+1 where strategy_id=#{strate_id}
+	</update>
+	<!-- 获取区域攻略总数 -->
+	<select id="getBeatStrateCount" parameterType="int" resultType="int">
+		select count(1) from tbl_strategy where beat_id=#{beat_id}
+	</select>
+	<!-- 获取区域攻略分页集合 -->
+	<select id="getStrateListByBeat_id" parameterType="map" resultMap="baseSBU">
+		select * from tbl_strategy s join tbl_user u
+		on s.user_id=u.user_id
+		join tbl_beat b 
+		on s.beat_id=b.beat_id
+		where s.beat_id=#{beat_id} ORDER BY readimgNum desc limit #{index},#{size}
+	</select>
+	<!-- 根据id获取攻略详情 -->
+	<select id="getStrateBySID" parameterType="int" resultMap="baseSBU">
+		select * from tbl_strategy s join tbl_user u
+		on u.user_id=s.user_id
+		join tbl_beat b on b.beat_id=s.beat_id
+		where s.strategy_id=#{strate_id}
+	</select>
+	<!-- 获取攻略详情  区域及作者 -->
+	<resultMap type="strate" id="baseSBU">
+		<id column="strategy_id" property="strategy_id"/>
+		<result column="txt" property="txt"/>
+		<result column="strate_time" property="strate_time"/>
+		<result column="title" property="title"/>
+		<result column="img" property="img"/>
+		<result column="readimgNum" property="readimgNum"/>
+		<association property="user" javaType="user">
+			<id column="user_id" property="user_id"/>
+			<result column="user_name" property="user_name"/>
+			<result column="headimg" property="headimg"/>
+		</association>
+		<association property="beat" javaType="beat">
+			<id column="beat_id" property="beat_id"/>
+			<result column="beat_name" property="beat_name"/>
+			<result column="beat_img" property="beat_img"/>
+			<result column="beat_introduce" property="beat_introduce"/>
+		</association>
+	</resultMap>
+	<!-- 景点评论及评论人 -->
+	<resultMap type="AttrComment" id="baseACU">
+		<id column="comment_id" property="comment_id"/>
+		<result column="attr_id" property="attr_id"/>
+		<result column="comment" property="comment"/>
+		<result column="comment_time" property="comment_time"/>
+		<association property="user" javaType="user">
+			<id column="user_id" property="user_id"/>
+			<result column="user_name" property="user_name"/>
+			<result column="headimg" property="headimg"/>
+		</association>
+	</resultMap>
+	<!-- 区域评论及评论人 -->
+	<resultMap type="beatComment" id="beseBCU">
+		<id column="comment_id" property="comment_id"/>
+		<result column="beat_id" property="beat_id"/>
+		<result column="comment" property="comment"/>
+		<result column="comment_time" property="comment_time"/>
+		<association property="user" javaType="user">
+			<id column="user_id" property="user_id"/>
+			<result column="user_name" property="user_name"/>
+			<result column="headimg" property="headimg"/>
+		</association>
+	</resultMap>
+	<!-- 攻略评论及评论人 -->
+	<resultMap type="strateComment" id="beseSCU">
+		<id column="comment_id" property="comment_id"/>
+		<result column="comment_txt" property="comment_txt"/>
+		<result column="strategy_id" property="strategy_id"/>
+		<result column="time" property="time"/>
+		<association property="user" javaType="user">
+			<id column="user_id" property="user_id"/>
+			<result column="user_name" property="user_name"/>
+			<result column="headimg" property="headimg"/>
+		</association>
+	</resultMap>
+</mapper>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.dao.AttractionDao">
+	 
+	 
+	<!-- 添加景点 -->
+	<insert id="addAttractions" parameterType="attractions">
+ 		insert into tbl_attractions(attractions_name,attractions_img,attractions_introduce,beat_id,country_id,province_id) values(#{attractions_name},#{attractions_img},#{attractions_introduce},#{beat.beat_id},#{province.province_id},#{country.country_id})
+ 	</insert>
+ 	
+ 	<!-- 删除用户 -->
+ 	<delete id="delAttractions" parameterType="int" >
+ 		delete from tbl_attractions where attractions_id=#{attractions_id}
+ 	</delete>
+ 	
+ 	<!-- 修改景点 -->
+ 	<update id="editAttractions" parameterType="attractions" >
+ 		update tbl_attractions
+ 		<set>
+ 			<if test="attractions_name!=null and attractions_name!=''">
+ 				attractions_name=#{attractions_name},
+ 			</if>
+ 			<if test="attractions_img!=null and attractions_img!=''">
+ 				attractions_img=#{attractions_img},
+ 			</if>
+ 			<if test="attractions_introduce!=null and attractions_introduce!=''">
+ 				attractions_introduce=#{attractions_introduce},
+ 			</if>
+ 			<if test="beat.beat_id!=null and beat.beat_id!=0">
+ 				beat_id=#{beat.beat_id},
+ 			</if>
+ 			<if test="province.province_id!=null and province.province_id!=0">
+ 				province_id=#{province.province_id},
+ 			</if>
+ 			<if test="country.country_id!=null and country.country_id!=0">
+ 				country_id=#{country.country_id},
+ 			</if>
+ 		</set>
+ 		where attractions_id = #{attractions_id}
+ 		
+ 	</update>
+ 	
+ 		<select id="getProvinceList1" resultType="province">
+			select province_id,province_name from tbl_province 
+		</select>
+ 	
+ 	
+ 	<!-- 获取景点id -->
+ 	<select id="getAttractionsById" parameterType="int" resultMap="baseattractions">
+ 		select * from tbl_attractions a join tbl_beat b
+ 		on b.beat_id=a.beat_id
+ 		join tbl_country c
+ 		on c.country_id=a.country_id
+ 		join tbl_province p
+ 		on p.province_id=a.province_id
+ 		where a.attractions_id=#{attractions_id} 
+ 	</select>
+ 	<select id="getCountryById" parameterType="int" resultMap="baseattractions">
+ 		select * from tbl_country c join tbl_attractions a
+ 		on c.country_id=a.country_id
+ 		where c.attractions_id=#{attractions_id}
+ 	</select>
+ 	<select id="getProvinceById" parameterType="int" resultMap="baseattractions">
+ 		select * from tbl_province p join tbl_attractions a
+ 		on p.province_id=a.province_id
+ 		where a.attractions_id=#{attractions_id}
+ 	</select>
+ 	
+ 	
+ 		<!-- 获取总条数 -->
+ 	<select id="getAttractionsListCount" parameterType="map" resultType="long">
+ 		select count(1) from tbl_attractions 
+ 		<where>
+ 		<if test="attractions_name!=null and attractions_name!=''">
+ 				and	attractions_name like concat('%',#{attractions_name} ,'%')
+ 			</if>
+ 			<if test="beat_id!=null and beat_id!=0">
+ 				and beat_id = #{beat_id}
+ 			</if>
+ 			<if test="province_id!=null and province_id!=0">
+ 				and province_id = #{province_id}
+ 			</if>
+ 			<if test="country_id!=null and country_id!=0">
+ 				and country_id = #{country_id}
+ 			</if>
+ 		</where>
+ 	</select>
+ 	
+ 	<!-- 获取每一页的条数 -->
+ 	<select id="getAttractionsListByIndex" resultMap="baseattractions" parameterType="map">
+ 		select * from tbl_attractions a join tbl_beat b
+ 		on a.beat_id=b.beat_id
+ 		join tbl_country c
+ 		on c.country_id=a.country_id
+ 		join tbl_province p
+ 		on p.province_id=a.province_id
+ 		<where>
+ 			<if test="attractions_name!=null and attractions_name!=''">
+ 				and	a.attractions_name like concat('%',#{attractions_name} ,'%')
+ 			</if>
+ 			<if test="beat_id!=null and beat_id!=0">
+ 				and a.beat_id = #{beat_id}
+ 			</if>
+ 			<if test="province_id!=null and province_id!=0">
+ 				and a.province_id = #{province_id}
+ 			</if>
+ 			<if test="country_id!=null and country_id!=0">
+ 				and a.country_id = #{country_id}
+ 			</if>
+ 		</where>
+ 		limit #{start},#{end}
+ 	</select>
+ 	
+ 	<!-- 绑定景点和区域 -->
+ 	<resultMap type="attractions" id="baseattractions">
+ 		<id property="attractions_id" column="attractions_id" />
+ 		<result property="attractions_name" column="attractions_name" />
+
+ 		<result property="attractions_img" column="attractions_img" />
+ 		<result property="attractions_introduce" column="attractions_introduce" />
+ 		
+ 		<association property="beat" javaType="beat">
+ 			<id property="beat_id" column="beat_id" />
+ 			<result property="beat_name" column="beat_name" />
+ 		</association>
+ 		<association property="province" javaType="province">
+ 			<id property="province_id" column="province_id" />
+ 			<result property="province_name" column="province_name" />
+ 		</association>
+ 		<association property="country" javaType="country">
+ 			<id property="country_id" column="country_id" />
+ 			<result property="country_name" column="country_name" />
+ 		</association>
+ 	</resultMap>
+</mapper>

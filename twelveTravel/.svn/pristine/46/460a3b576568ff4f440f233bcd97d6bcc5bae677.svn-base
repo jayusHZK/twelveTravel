@@ -1,0 +1,12 @@
+package com.travel.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.travel.po.Attractions;
+import com.travel.po.Result;
+
+public interface SelectDetailDao {
+	Result selectDetail(Map map);
+	List<Attractions> getAttractionsByhot();
+}

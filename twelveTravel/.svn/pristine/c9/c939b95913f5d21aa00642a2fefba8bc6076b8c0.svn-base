@@ -1,0 +1,39 @@
+package com.travel.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import com.travel.service.MainService;
+
+@Controller
+@RequestMapping("/main")
+public class MainController {
+	//从spring容器中获取类
+	@Autowired
+	private MainService mainService;
+	
+	@RequestMapping("/tologin")
+	public String toLogin(){
+		return "/frist/frist";
+	}
+	
+	@RequestMapping("/totop")
+	public String toTop(){
+		return "/main/top";
+	}
+	@RequestMapping("/toleft")
+	public String toLeft(Model m){
+		m.addAttribute("leftpower", mainService.getPower());
+		return "/main/left";
+	}
+	@RequestMapping("/toright")
+	public String toRight(){
+		return "/main/right";
+	}
+	@RequestMapping("/tomain")
+	public String toMain(){
+		return "/main/main";
+	}
+	
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.dao.MainDao">
+	<!-- 加载后台左侧导航栏的列表 -->
+	<select id="getPoser" resultMap="basePP">
+		select * from tbl_power p join tbl_power_type pt on p.power_type_id=pt.power_type_id
+	</select>
+	<resultMap type="power_Type" id="basePP">
+		<id column="power_type_id" property="power_type_id" />
+		<result column="type_name" property="type_name" />
+		<collection property="pList" ofType="power">
+			<id column="power_id" property="power_id" />
+			<result column="power_name" property="power_name" />
+			<result column="controller" property="controller" />
+			<result column="action" property="action" />
+			<result column="isshow" property="isshow" />
+		</collection>
+	</resultMap>
+</mapper>

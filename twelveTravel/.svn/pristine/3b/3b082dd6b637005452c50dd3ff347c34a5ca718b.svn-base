@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.dao.ChangeDetailDao">
+
+	<!-- 添加地区 -->
+	
+	<insert id="toaddbeat" parameterType="beat">
+
+	insert into tbl_beat(beat_name,beat_img,beat_introduce,hotNum,province_id)values(#{beat_name},#{beat_img},#{beat_introduce},#{hotNum},#{province_id});
+
+	insert into tbl_beat(beat_name,beat_img,beat_introduce,hotNum,province_id)values(#{beat_name},#{beat_img},#{beat_introduce},#{hotNum},#{province_id})
+
+	
+	</insert>
+
+	 <select id="getBeatList1"  parameterType="int" resultType="beat"  >
+	   select *  from  tbl_beat b where province_id=#{province_id}
+	 
+	 </select>  
+
+	<select id="getBeatListCount" parameterType="map" resultType="long">
+ 		select count(1) from tbl_beat
+ 		<where>
+ 			<if test="beat_name!=null and beat_name!=''">
+ 				and	beat_name = #{beat_name}
+ 			</if>
+ 			<if test="province_id!=null and province_id!=0">
+ 				and province_id = #{province_id}
+ 			</if>
+ 		</where>
+ 	</select>
+	<select id="getBeatListByIndex" resultMap="baseuser" parameterType="map">
+ 		select b.*,p.province_name from tbl_beat b left join tbl_province p
+ 		on b.province_id=p.province_id
+ 		<where>
+ 			<if test="beat_name!=null and beat_name!=''">
+ 				and	b.beat_name = #{beat_name} 
+ 			</if>
+ 			<if test="province_id!=null and province_id!=0">
+ 				and province_id = #{province_id}
+ 			</if>
+ 		</where>
+ 		 limit #{start},#{end}   
+ 	</select>
+	<select id="getProvinceList" parameterType="int" resultType="province">
+		select * from tbl_province where country_id=#{country_id}
+	</select>
+
+	<select id="getCountryList" resultType="country">
+	select country_id,country_name from tbl_country
+	</select>
+	<!-- 删除地区 -->
+	<delete id="delBeat" parameterType="int">
+	delete from tbl_beat where beat_id=#{beat_id}
+	</delete>
+	<select id="getBeatById" resultType="beat">
+ 		select * from tbl_beat 
+ 	</select>
+ 	<resultMap type="beat" id="baseuser">
+		<id property="beat_id" column="beat_id"/>
+		<result property="beat_name" column="beat_name"/>
+		<result property="beat_img" column="beat_img"/>
+		<result property="beat_introduce" column="beat_introduce"/>
+		<result property="hotNum" column="hotNum"/>
+		<result property="headimg" column="headimg"/>
+		
+		<association property="province" javaType="province">
+			<id property="province_id" column="province_id"/>
+			<result property="province_name" column="province_name"/>
+		</association>
+	</resultMap>
+</mapper>

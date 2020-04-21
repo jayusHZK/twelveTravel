@@ -1,0 +1,62 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+<title>My JSP 'left.jsp' starting page</title>
+<link href="${pageContext.request.contextPath }/css/style.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="${pageContext.request.contextPath }/js/jquery-1.10.2.js"></script>
+
+<script type="text/javascript">
+	$(function() {
+		//导航切换
+		$(".menuson li").click(function() {
+			$(".menuson li.active").removeClass("active");
+			$(this).addClass("active");
+		});
+
+		$('.title').click(function() {
+			var $ul = $(this).next('ul');
+			$('dd').find('ul').slideUp();
+			if ($ul.is(':visible')) {
+				$(this).next('ul').slideUp();
+			} else {
+				$(this).next('ul').slideDown();
+			}
+		});
+	});
+</script>
+
+
+
+</head>
+
+<body style="background:#f0f9fd;">
+	<div class="lefttop">
+		<span></span>十二旅游后台管理
+	</div>
+	<dl class="leftmenu">
+	<c:forEach items="${leftpower }" var="item">
+		<dd>
+			<div class="title">
+				<span><img src="${pageContext.request.contextPath }/images/leftico01.png" /></span>${item.type_name }
+			</div>
+			<ul class="menuson">
+				<c:forEach items="${item.pList }" var="item1">
+				<c:if test="${item1.isshow==1 }">
+				<li><cite></cite><a href="${pageContext.request.contextPath }/${item1.controller }/${item1.action }" target="rightFrame">${item1.power_name }</a>
+				</c:if>
+				</li>
+				</c:forEach> 
+			</ul>
+		</dd>
+	</c:forEach>
+	</dl>
+
+	
+</body>
+</html>

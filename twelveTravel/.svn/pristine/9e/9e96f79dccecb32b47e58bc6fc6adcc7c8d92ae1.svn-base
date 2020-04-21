@@ -1,0 +1,66 @@
+package com.travel.controller;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.travel.po.User;
+import com.travel.service.ChangeUserService;
+
+@Controller
+@RequestMapping("/changeuser")
+/***
+ * 前端用户模块的controller
+ * @author cxw
+ *
+ */
+public class ChangeUserController {
+	@Autowired
+	// 引入userService
+	private ChangeUserService changeUserService;
+
+	@RequestMapping("/login")
+	/***
+	 *用户登录
+	 * @param user 获取用户登录的账号密码
+	 * @param session 用作将用户信息存入session
+	 * @return
+	 */
+	public String login(User user, HttpSession session) {
+		user = changeUserService.login(user);
+		if (user == null) {
+			return "/frist/frist";
+		}
+		session.setAttribute("user", user);
+		return "/frist/frist";
+	}
+	@RequestMapping("/toregister")
+	public String toRegister(Model m,Integer user_id) {
+		//判断user_id是否存在   存在呢就查询对应用户
+		if(user_id!=null &&user_id!=0){
+			User user = changeUserService.getUserById(user_id);
+			m.addAttribute("userInfo", user);
+		}
+		return "frist/register";
+	}
+	@RequestMapping("/register")
+	/***
+	 *用户注册
+	 * @param user 获取用户登录的账号密码
+	 * @param session 用作将用户信息存入session
+	 * @return
+	 */
+	public String register(User user, HttpSession session) {
+		// 注册用户
+		int reuslt = changeUserService.register(user);
+		if (reuslt > 0) {// 注册成功 重定向到首页
+			return "redirect:/main/tologin";
+		} else {// 否则 返回到注册页面
+			return "redirect:/changeuser/toregister";
+		}
+	}
+
+}

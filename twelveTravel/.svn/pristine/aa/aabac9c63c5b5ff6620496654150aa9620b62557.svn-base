@@ -1,0 +1,32 @@
+package com.travel.service.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.travel.dao.SelectDetailDao;
+import com.travel.po.Result;
+import com.travel.service.SelectDetailService;
+@Service
+public class SelectDetailServiceImpl implements SelectDetailService{
+	@Autowired
+	private SelectDetailDao selectDetailDao;
+	@Override
+	public Result selectDetail(String attractions_name, String beat_name) {
+		Result rs=new Result();
+		Map<String, Object> map=new HashMap<String, Object>();
+		map.put("attractions_name", attractions_name);
+		map.put("beat_name", beat_name);
+		rs.setMsg(selectDetailDao.selectDetail(map));
+		rs.setCode(200);
+		return rs;
+	}
+	@Override
+	public Result getAttractionsByhot() {
+		
+		return (Result) selectDetailDao.getAttractionsByhot();
+	}
+	
+}

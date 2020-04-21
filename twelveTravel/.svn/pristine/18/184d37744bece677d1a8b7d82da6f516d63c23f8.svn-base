@@ -1,0 +1,140 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<base href="<%=basePath%>">
+<title>My JSP 'addshop.jsp' starting page</title>
+<script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="js/ajaxfileupload.js"></script>
+</head>
+
+<body>
+
+	<form action="<%=path%>/ShopServlet" method="post">
+		<input type="hidden" name="type" value="3">
+		<table>
+			<tr>
+				<td>商品名称</td>
+				<td><input type="text" name="shop_name"></td>
+			</tr>
+			<tr>
+				<td>商品价格</td>
+				<td><input type="text" name="shop_price"></td>
+			</tr>
+			<tr>
+				<td>折后价</td>
+				<td><input type="text" name="shop_Zprice"></td>
+			</tr>
+			<tr>
+				<td>库存</td>
+				<td><input type="text" name="shop_conut"></td>
+			</tr>
+			<tr>
+				<td>热度</td>
+				<td><input type="text" name="shop_hot"></td>
+			</tr>
+			<tr>
+				<td>销量</td>
+				<td><input type="text" name="shop_sellNum"></td>
+			</tr>
+			<tr>
+				<td>图片</td>
+				<td><input type="file" id="shop_img" style="display:none" name="shop_img">
+					<img src="img/upload.png" id="loadimg" width="100" height="100" />
+					<input type="hidden" name="img" id="img" value="">
+				</td>
+			</tr>
+			<tr>
+				<td>商品介绍</td>
+				<td><textarea rows="5" cols="50" name="shop_remark"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>好评</td>
+				<td><input type="text" name="shop_goodNum"></td>
+			</tr>
+			<tr>
+				<td>差评</td>
+				<td><input type="text" name="shop_badNum"></td>
+			</tr>
+			<tr>
+				<td>类别</td>
+				<td><select id="shoptype" name="type_id">
+						
+				</select></td>
+			</tr>
+			<tr>
+				<td colspan="2"><input type="submit" value="提交"></td>
+
+			</tr>
+
+		</table>
+	</form>
+	${requestScope.msg }
+	<script type="text/javascript">
+		$(function(){
+			loadshoptype();
+			
+			//点击图片上传出发file控件的点击事件
+			$("#loadimg").click(function(){
+				$("#shop_img").click();
+			});
+			
+			//低版本jquery使用live形式动态绑定事件
+			//$("#shop_img").live("change",function(){
+				
+			//})
+			//file控件value值发生改变也就是完场选择图片的事件   通过on绑定的形式能多次触发change事件   
+			$(document).on("change","#shop_img",function(){
+				var data={"img":$("#shop_img").val()};
+				$.ajaxFileUpload({
+    				"url":"ShopServlet",
+    				"secureuri":false,
+    				"fileElementId":"shop_img",//装载图片的控件Id
+    				"dataType":"json",
+    				"type":"post",
+    				"data":data,//发送的数据xcseewewqweqw23223
+    				"success":function(_data){
+    					console.log(_data);
+    					if(_data.code==200){
+    						//设置图片的src地址   实现动态预览
+    						$("#loadimg").attr("src",_data.msg);
+    						//给隐藏文本赋值    img/....png
+    						$("#img").val(_data.msg);
+    					}
+    				},
+    				"error":function(){
+    					alert("错误");
+    				}
+    			});
+			});
+			
+			function loadshoptype(){
+				$.ajax({
+					"url":"ShopTypeServlet",
+					"data":{"type":"1"},
+					"type":"POST",
+					"dataType":"json",
+					"success":function(_data){
+						//console.log(_data);
+						if(_data.code==200){
+							var html="";
+							$(_data.msg).each(function(){
+								html+="<option value='"+this.id+"'>"+this.name+"</option>";
+							});
+							$("#shoptype").append(html);
+						}
+					}
+				});
+			}
+		});
+	</script>
+</body>
+</html>

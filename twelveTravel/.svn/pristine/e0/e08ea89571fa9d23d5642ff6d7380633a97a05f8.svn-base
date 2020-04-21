@@ -1,0 +1,46 @@
+package com.travel.service.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.travel.dao.StrateDao;
+import com.travel.po.Beat;
+import com.travel.po.Result;
+import com.travel.po.Strate;
+import com.travel.po.User;
+import com.travel.service.StrateService;
+
+@Service
+public class StrateServiceImpl implements StrateService {
+	@Autowired
+	private StrateDao strateDao;
+	//根据id获取城市详情
+	@Override
+	public Beat getBeatByID(Integer beat_id) {
+		// TODO Auto-generated method stub
+		return strateDao.getBeatByID(beat_id);
+	}
+
+	@Override
+	//添加攻略
+	public Result addStrate(Integer user_id, Integer beat_id, String txt,String title) {
+		Result r=new Result();
+		User user=new User();
+		Beat beat=new Beat();
+		user.setUser_id(user_id);
+		beat.setBeat_id(beat_id);
+		Strate strate=new Strate();
+		strate.setBeat(beat);
+		strate.setUser(user);
+		strate.setTxt(txt);
+		strate.setTitle(title);
+		strate.setStrate_time((int)System.currentTimeMillis()/1000);
+		strateDao.addStrate(strate);
+		r.setCode(strate.getStrategy_id());
+		return r;
+	}
+
+}

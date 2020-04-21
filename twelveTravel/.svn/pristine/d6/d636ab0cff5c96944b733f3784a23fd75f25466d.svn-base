@@ -1,0 +1,54 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    
+    <title>My JSP 'orderpay.jsp' starting page</title>
+    <script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+  
+  </head>
+  
+  <body>
+    
+    <div id="box">
+    	
+    </div>
+    <input type="hidden" id="user_id" value="" />
+    <script type="text/javascript">
+    	$(function(){
+    		loadorder();
+    		
+    		$(document).on("click","#buy",function(){
+    			location.href="ewm.jsp?order_id="+$(this).data("id")+"&price="+$(this).data("price")+"&user_id="+$("#user_id").val();
+    		});
+    		//加载未支付订单
+    		function loadorder(){
+    			$.post("OrderServlet",{"type":"2"},function(data){
+    				console.log(data);
+    				var html="";
+    				
+    				if(data.code==200){
+    					$("#user_id").val(data.msg[0].user_id);
+    					$(data.msg).each(function(){
+    						html+=""+this.type_name+"<br>";
+    	    				html+=""+this.shop_name+"<br>";
+    	    				html+="<img width='80' height='100' src='"+this.shop_img+"' >";
+    	    				html+="需支付："+this.price+"元";
+    	    				html+="<div id='buy' data-id='"+this.order_id+"' data-price='"+this.price+"' style='both:clean;width:120px;height:35px;line-height: 35px;background-color: #f90;text-align: center;color:#fff;border-radius:5px'>结算</div>";
+    	    				html+="";
+    					});
+    				}
+    				
+    				$("#box").empty().append(html);
+    			},"json");
+    		}
+    	});
+    </script>
+  </body>
+</html>

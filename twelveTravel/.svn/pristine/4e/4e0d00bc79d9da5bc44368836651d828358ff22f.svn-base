@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.dao.UserDao">
+
+	<!-- 用户登录 -->
+	<select id="login" parameterType="user" resultType="user">
+		select * from tbl_user where user_name=#{user_name} and password=#{password}
+	</select>
+
+	<!-- 添加用户 -->
+	<insert id="addUser" parameterType="user">
+		insert into tbl_user(user_name,age,address,code,password,headimg,role_id)
+		values(#{user_name},#{age},#{address},#{code},#{password},#{headimg},#{role.role_id})
+	</insert>
+
+	<!-- 修改用户 -->
+	<update id="editUser" parameterType="user">
+		update tbl_user
+		<set>
+			<if test="user_name!=null and user_name!=''">
+				user_name=#{user_name},
+			</if>
+			<if test="age!=null and age!=0">
+				age=#{age},
+			</if>
+			<if test="code!=null and code!=''">
+				code=#{code},
+			</if>
+			<if test="password!=null and password!=''">
+				password=#{password},
+			</if>
+			<if test="address!=null and address!=''">
+				address=#{address},
+			</if>
+			<if test="role.role_id!=null and role.role_id!=0">
+				role_id=#{role.role_id},
+			</if>
+			<if test="headimg!=null and headimg!=''">
+				headimg=#{headimg},
+			</if>
+		</set>
+		where user_id = #{user_id}
+	</update>
+
+	<!-- 删除用户 -->
+	<delete id="delUser" parameterType="int">
+		delete from tbl_user where user_id=#{user_id}
+	</delete>
+
+	<!-- 获取用户id -->
+	<select id="getUserById" parameterType="int" resultMap="baseUser">
+		select * from tbl_user u join tbl_role r
+		on r.role_id=u.role_id
+		where u.user_id=#{user_id}
+	</select>
+
+	<!-- 获取总条数 -->
+	<select id="getUserListCount" parameterType="map" resultType="long">
+		select count(1) from tbl_user
+		<where>
+			<if test="user_name!=null and user_name!=''">
+				and user_name like concat('%',#{user_name} ,'%')
+			</if>
+			<if test="role_id!=null and role_id!=0">
+				and role_id = #{role_id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 获取每一页的条数 -->
+	<select id="getUserListByIndex" resultMap="baseUser"
+		parameterType="map">
+		select * from tbl_user u join tbl_role r
+		on u.role_id=r.role_id
+		<where>
+			<if test="user_name!=null and user_name!=''">
+				and u.user_name like concat('%',#{user_name} ,'%')
+			</if>
+			<if test="role_id!=null and role_id!=0">
+				and u.role_id = #{role_id}
+			</if>
+		</where>
+		limit #{start},#{end}
+	</select>
+
+	<!-- 绑定用户和角色 -->
+	<resultMap type="user" id="baseUser">
+		<id property="user_id" column="user_id" />
+		<result property="user_name" column="user_name" />
+		<result property="password" column="password" />
+		<result property="age" column="age" />
+		<result property="code" column="code" />
+		<result property="address" column="address" />
+		<result property="headimg" column="headimg" />
+		<association property="role" javaType="role">
+			<id property="role_id" column="role_id" />
+			<result property="role_name" column="role_name" />
+		</association>
+	</resultMap>
+</mapper>

@@ -1,0 +1,83 @@
+package com.travel.service.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.travel.dao.UserDao;
+import com.travel.po.Page;
+import com.travel.po.User;
+import com.travel.service.UserService;
+
+@Service
+public class UserServiceImpl implements UserService {
+
+	@Autowired
+	private UserDao userDao;// 填充用户的dao
+
+	/***
+	 * 获取用户id
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@Override
+	public User getUserById(Integer user_id) {
+		return userDao.getUserById(user_id);
+	}
+
+	/***
+	 * 添加用户
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@Override
+	public int addUser(User user) {
+		if (user.getUser_id() != null && user.getUser_id() > 0) {
+			return userDao.editUser(user);
+		}
+			return userDao.addUser(user);
+	}
+
+	@Override
+	public Page getUserList(Integer index, String user_name, Integer role_id) {
+		Page rp = new Page();
+		// 根据条件来查询
+		rp.setSize(5);// 一页显示多少条数据
+		rp.setIndex(index); // 当前是哪一页
+		//
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("start", (index - 1) * rp.getSize());
+		map.put("end", rp.getSize());
+		map.put("user_name", user_name);
+		map.put("role_id", role_id);
+
+		// 获取总条数
+		rp.setCount(userDao.getUserListCount(map).intValue());
+		// 获取总页数
+		rp.setPageCount((int) Math.ceil((double) rp.getCount() / rp.getSize()));
+		// 获取每一页的条数
+		rp.setObj(userDao.getUserListByIndex(map));
+		return rp;
+	}
+
+	/***
+	 * 用户登录
+	 */
+	@Override
+	public User login(User user) {
+		return userDao.login(user.getUser_name(), user.getPassword());
+	}
+
+	/***
+	 * 删除用户
+	 */
+	@Override
+	public int delUser(Integer user_id) {
+		return userDao.delUser(user_id);
+	}
+
+}

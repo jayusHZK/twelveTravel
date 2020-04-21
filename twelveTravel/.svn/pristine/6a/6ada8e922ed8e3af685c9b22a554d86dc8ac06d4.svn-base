@@ -1,0 +1,11 @@
+package com.travel.dao;
+
+import java.util.Map;
+
+import com.travel.po.Beat;
+import com.travel.po.Strate;
+
+public interface StrateDao {
+	Beat getBeatByID(Integer beat_id);
+	int addStrate(Strate strate);
+}

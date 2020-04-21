@@ -1,0 +1,33 @@
+package com.travel.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.travel.po.Attractions;
+import com.travel.po.Country;
+import com.travel.po.Page;
+import com.travel.po.Province;
+
+public interface AttractionDao {
+	
+		// 添加景点
+		int addAttractions(Attractions attractions);
+		
+		// 删除景点
+		int delAttractions(Integer attractions_id);
+		
+		// 修改景点
+		int editAttractions(Attractions attractions);
+		
+		List<Province> getProvinceList1();
+		
+		Attractions	getAttractionsById(Integer attractions_id);
+		
+		Country getCountryById(Integer country_id);
+		
+		Province getProvinceById(Integer province_id);
+		
+		Long getAttractionsListCount(Map map);
+		
+		List<Attractions> getAttractionsListByIndex(Map param);
+}

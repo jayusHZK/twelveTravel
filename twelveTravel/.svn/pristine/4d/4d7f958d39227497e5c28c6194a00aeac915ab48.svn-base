@@ -1,0 +1,60 @@
+package com.travel.service.impl;
+
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.travel.dao.ChangeUserDao;
+import com.travel.po.User;
+import com.travel.service.ChangeUserService;
+
+@Service
+public class ChangeUserServiceImpl implements ChangeUserService{
+	@Autowired
+	private ChangeUserDao changeUserDao;
+
+	@Override
+	/***
+	 * 用户登录
+	 * @param user 获取登陆用户的账号密码
+	 * @return
+	 */
+	public User login(User user) {
+		
+		return changeUserDao.login(user.getUser_name(),user.getPassword());
+	}
+	/***
+	 * 用户注册
+	 * @param user
+	 * @return
+	 */
+	@Override
+	public int register(User user) {
+		
+		return changeUserDao.register(user);
+	}
+	/***
+	 * 根据用户id获取用户信息
+	 * @param user_id 获取用户id
+	 * @return
+	 */
+	@Override
+	public User getUserById(Integer user_id) {
+		
+		return changeUserDao.getUserById(user_id);
+	}
+	/***
+	 * 获取所有用户的登录名
+	 * 
+	 * @return
+	 */
+
+	@Override
+	public List<User> getUserLoginName(@Param("user_name") String user_name) {
+		
+		return changeUserDao.getUserLoginName(user_name);
+	}
+}

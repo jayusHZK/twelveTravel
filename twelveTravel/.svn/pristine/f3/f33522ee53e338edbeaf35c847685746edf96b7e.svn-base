@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.dao.StrateDao">
+	<!-- 根据id获取城市详情 -->
+	<select id="getBeatByID" parameterType="int" resultType="beat">
+		select * from tbl_beat where beat_id=#{beat_id}
+	</select>
+	<!-- 添加攻略 -->
+	<insert id="addStrate" parameterType="map" useGeneratedKeys="true" keyProperty="strategy_id">
+		insert into tbl_strategy(beat_id,txt,user_id,strate_time,title) values
+		(#{beat_id},#{txt},#{user_id},#{strate_time},#{title})
+	</insert>
+	<!-- 获取国家数据 用作分页查询 -->
+	<select id="getCountryList" resultType="country">
+		select * from tbl_country
+	</select>
+	<!-- 根据国家id获取其下属省份 -->
+	<select id="getProvince" parameterType="int" resultType="province">
+		select * from tbl_province where country_id=#{country_id}
+	</select>
+	<!-- 根据省份id获取其下属城市 -->
+	<select id="getBeat" parameterType="int" resultType="beat">
+		select * from tbl_beat where province_id=#{province_id}
+	</select>
+	<!-- 获取攻略数据总数 -->
+	<select id="getStrateCount" parameterType="map" resultType="int">
+		select count(1) from tbl_strategy s join tbl_beat b 
+		on s.beat_id=b.beat_id join tbl_province p
+		on p.province_id=b.province_id join tbl_country c
+		on c.country_id=p.country_id
+		<where>
+			<if test="content!=null and content!=''">
+				 s.txt like concat('%',#{content},'%') or s.title like concat('%',#{content},'%') 
+			</if>
+			<if test="beat_id!=null and beat_id!=0">
+				and b.beat_id=#{beat_id}
+			</if>
+			<if test="province_id!=null and province_id!=0">
+				and p.province_id=#{province_id}
+			</if>
+			<if test="country_id!=null and country_id!=0">
+				and c.country_id=#{country_id}
+			</if>
+		</where>
+	</select>
+	<!-- 攻略分页查询 -->
+	<select id="getStrateList" parameterType="map" resultMap="baseSB">
+		select * from tbl_strategy s join tbl_beat b 
+		on s.beat_id=b.beat_id join tbl_province p
+		on p.province_id=b.province_id join tbl_country c
+		on c.country_id=p.country_id
+		<where>
+			<if test="content!=null and content!=''">
+				 s.txt like concat('%',#{content},'%') or s.title like concat('%',#{content},'%') 
+			</if>
+			<if test="beat_id!=null and beat_id!=0">
+				and b.beat_id=#{beat_id}
+			</if>
+			<if test="province_id!=null and province_id!=0">
+				and p.province_id=#{province_id}
+			</if>
+			<if test="country_id!=null and country_id!=0">
+				and c.country_id=#{country_id}
+			</if>
+		</where>
+		limit #{start},#{size}
+	</select>
+	<!-- 删除攻略 -->
+	<delete id="deleteStrate" parameterType="int">
+		delete from tbl_strategy where strategy_id=#{strate_id}
+	</delete>
+	<!-- 获取区域攻略评论总数 -->
+	<select id="getBeatCommentCount" parameterType="map" resultType="int">
+		select count(1) from tbl_beat_comment bc join tbl_user u
+		on u.user_id=bc.user_id
+		<where>
+			<if test="content!=null and content!=''">
+				bc.comment like concat('%',#{content},'%')
+			</if>
+		</where>
+	</select>
+	<!-- 获取区域评论 -->
+	<select id="getBeatCommentList" parameterType="map" resultMap="beatBC">
+		select * from tbl_beat_comment bc join tbl_user u
+		on u.user_id=bc.user_id
+		<where>
+			<if test="content!=null and content!=''">
+				bc.comment like concat('%',#{content},'%')
+			</if>
+		</where> 
+		limit #{start},#{size}
+	</select>
+	<!-- 获取景点区域攻略评论总数 -->
+	<select id="getAttrCommentCount" parameterType="map" resultType="int">
+		select count(1) from tbl_attr_comment ac join tbl_user u
+		on u.user_id=ac.user_id
+		<where>
+			<if test="content!=null and content!=''">
+				ac.comment  like concat('%',#{content},'%')
+			</if>
+		</where>
+	</select>
+	<!-- 获取景点评论 -->
+	<select id="getAttrCommentList" parameterType="map" resultMap="beatAC">
+		select * from tbl_attr_comment ac join tbl_user u
+		on u.user_id=ac.user_id
+		<where>
+			<if test="content!=null and content!=''">
+				ac.comment like concat('%',#{content},'%')
+			</if>
+		</where> 
+		limit #{start},#{size}
+	</select>
+	<!-- 删除区域评论 -->
+	<delete id="deleteBComment" parameterType="int">
+		delete from tbl_beat_comment where comment_id=#{comment_id}
+	</delete>
+	<!-- 删除景点评论 -->
+	<delete id="deleteAComment" parameterType="int">
+		delete from tbl_attr_comment where comment_id=#{comment_id}
+	</delete>
+	<!-- 获取攻略区域攻略评论总数 -->
+	<select id="getStrateCommentCount" parameterType="map" resultType="int">
+		select count(1) from tbl_strategy_comment sc join tbl_user u
+		on u.user_id=sc.user_id
+		<where>
+			<if test="content!=null and content!=''">
+				sc.comment_txt like concat('%',#{content},'%')
+			</if>
+		</where>
+	</select>
+	<!-- 获取攻略评论 -->
+	<select id="getStrateCommentList" parameterType="map" resultMap="beatSC">
+		select * from tbl_strategy_comment sc join tbl_user u
+		on u.user_id=sc.user_id
+		<where>
+			<if test="content!=null and content!=''">
+				sc.comment_txt like concat('%',#{content},'%')
+			</if>
+		</where> 
+		limit #{start},#{size}
+	</select>
+	<!-- 删除攻略评论 -->
+	<delete id="deleteSComment" parameterType="int">
+		delete from tbl_strategy_comment where comment_id=#{comment_id}
+	</delete>
+	<!-- 攻略分页查询数据 -->
+	<resultMap type="strate" id="baseSB">
+		<id property="strategy_id" column="strategy_id"/>
+		<result property="title" column="title"/>
+		<result property="txt" column="txt"/>
+		<result property="strate_time" column="strate_time"/>
+		<association property="beat" javaType="beat">
+			<id property="beat_id" column="beat_id"/>
+			<result property="beat_name" column="beat_name"/>
+			<result property="beat_img" column="beat_img"/>
+		</association>
+	</resultMap>
+	<!-- 区域评论 -->
+	<resultMap type="beatComment" id="beatBC">
+		<id property="comment_id" column="comment_id"/>
+		<result property="comment" column="comment"/>
+		<result property="comment_time" column="comment_time"/>
+		<association property="user" javaType="user">
+			<id property="user_id" column="user_id"/>
+			<result property="user_name" column="user_name"/>
+			<result property="headimg" column="headimg"/>
+		</association>
+	</resultMap>
+	<!-- 景点评论 -->
+	<resultMap type="attrComment" id="beatAC">
+		<id property="comment_id" column="comment_id"/>
+		<result property="comment" column="comment"/>
+		<result property="comment_time" column="comment_time"/>
+		<association property="user" javaType="user">
+			<id property="user_id" column="user_id"/>
+			<result property="user_name" column="user_name"/>
+			<result property="headimg" column="headimg"/>
+		</association>
+	</resultMap>
+	<!-- 攻略评论 -->
+	<resultMap type="strateComment" id="beatSC">
+		<id property="comment_id" column="comment_id"/>
+		<result property="comment_txt" column="comment_txt"/>
+		<result property="time" column="time"/>
+		<association property="user" javaType="user">
+			<id property="user_id" column="user_id"/>
+			<result property="user_name" column="user_name"/>
+			<result property="headimg" column="headimg"/>
+		</association>
+	</resultMap>
+</mapper>

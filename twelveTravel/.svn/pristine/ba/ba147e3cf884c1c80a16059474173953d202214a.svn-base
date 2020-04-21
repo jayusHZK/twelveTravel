@@ -1,0 +1,48 @@
+package com.travel.interceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.travel.po.User;
+
+public class LoginInterceptor implements HandlerInterceptor {
+
+	@Override
+	public void afterCompletion(HttpServletRequest arg0,
+			HttpServletResponse arg1, Object arg2, Exception arg3)
+			throws Exception {
+	}
+
+	@Override
+	public void postHandle(HttpServletRequest arg0, HttpServletResponse arg1,
+			Object arg2, ModelAndView arg3) throws Exception {
+	}
+
+	@Override
+	public boolean preHandle(HttpServletRequest arg0, HttpServletResponse arg1,
+			Object arg2) throws Exception {
+		// 获取访问的路劲
+		String url = arg0.getRequestURI();
+
+		// 根据路径来判断访问是否合法 tologin and login 是合法的
+		if (url.contains("/tologin") || url.contains("/login")) {
+			return true;
+		}
+
+		// 如果登录了就放行
+		User user = (User) arg0.getSession().getAttribute("user");
+
+		// 如果user存在表示登录了 否则没有登录
+		if (user != null) {
+			return true;
+		}
+
+		// 以上两种情况都没有放行 表示该请求应该被拦截
+		arg1.sendRedirect(arg0.getContextPath() + "/main/tologin");
+
+		return false;
+	}
+}

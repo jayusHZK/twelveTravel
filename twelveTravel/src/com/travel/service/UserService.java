@@ -1,0 +1,28 @@
+package com.travel.service;
+
+import com.travel.po.Page;
+import com.travel.po.Result;
+import com.travel.po.User;
+
+public interface UserService {
+	
+	//User login(User user);
+	
+	// 添加用户
+	Result addUser(User user,Integer role_id);
+	
+	//查询用户(判断用户是否已经被注册过)
+	Result findUser(User user);
+	
+	// 修改用户
+	Result editUser(User user,Integer role_id);
+
+	// 获取用户id
+	User getUserById(Integer user_id);
+	
+	//用户分页
+	Page getUserList(Integer index,String user_name,Integer role_id);
+	
+	//删除用户
+	int delUser(Integer user_id);
+}

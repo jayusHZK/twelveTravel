@@ -1,0 +1,11 @@
+#commentul li{
+	 list-style: none;
+	 float: left;
+	 margin-left: 50px;
+	 border: 1px blue solid;
+	 cursor:pointer;
+}
+#commentul{
+	float: left;
+	
+}

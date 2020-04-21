@@ -1,0 +1,10 @@
+package com.travel.service;
+
+import com.travel.po.Result;
+
+public interface SelectDetailService {
+	//根据景点名和地点查询景点
+	Result selectDetail(String attractions_name,String beat_name);
+	//根据景点热度给出推荐
+	Result getAttractionsByhot();
+}

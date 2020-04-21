@@ -1,0 +1,11 @@
+package com.travel.service;
+
+import com.travel.po.Beat;
+import com.travel.po.Result;
+
+public interface StrateService {
+	//获取城市详情 用作攻略添加
+	Beat getBeatByID(Integer beat_id);
+	//添加攻略
+	Result addStrate(Integer user_id,Integer beat_id,String txt,String title);
+}

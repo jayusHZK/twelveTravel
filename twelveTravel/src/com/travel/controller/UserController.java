@@ -1,0 +1,147 @@
+package com.travel.controller;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.travel.po.Page;
+import com.travel.po.Result;
+import com.travel.po.User;
+import com.travel.service.RoleService;
+import com.travel.service.UserService;
+
+@Controller
+@RequestMapping("/user")
+/***
+ *   
+ * @author cgy
+ * 用户controller
+ *
+ */
+public class UserController {
+	
+	@Autowired
+	private RoleService roleService;
+	@Autowired
+	private UserService userService;
+
+
+	/***
+	 * 查询用户(判断用户是否已经被注册过)
+	 * @param user
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/finduser")
+	public Result findUser(User user) {
+		return userService.findUser(user);
+	}
+	
+	
+	/***
+	 * 添加用户
+	 * @param user 用户实体
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/adduser")
+	public Result addUser(User user,Integer role_id) {
+		return userService.addUser(user, role_id);
+	}
+	
+	/***
+	 * 修改用户
+	 * @param user 用户实体
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/edituser")
+	public Result editUser(User user,Integer role_id) {
+		return userService.editUser(user, role_id);
+	}
+
+	/***
+	 * 跳转到添加用户页面
+	 * @param m 存储值用的model
+	 * @param user_id 用户的id
+	 * @return
+	 */
+	@RequestMapping("/toadduser")
+	public String toAddUser(Model m, Integer user_id) {
+		// 判断user_id是否存在 存在的话就查询对应用户
+		if (user_id != null && user_id != 0) {
+			User user = userService.getUserById(user_id);
+			m.addAttribute("userInfo", user);
+		}
+		// 因为添加用户时需要指定对应的角色 所以在加载之前应该先查询出所有的角色
+		m.addAttribute("rolelist", roleService.getRoleList());
+		return "user/adduser";
+	}
+	
+	/***
+	 * 跳转到修改用户界面
+	 * @param m 存储值用的model
+	 * @param user_id 用户的id
+	 * @return
+	 */
+	@RequestMapping("/toupdateuser")
+	public String toUpdateUser(Model m, Integer user_id) {
+		// 判断user_id是否存在 存在呢就查询对应用户
+		if (user_id != null && user_id != 0) {
+			User user = userService.getUserById(user_id);
+			m.addAttribute("userInfo", user);
+		}
+		// 因为添加用户时需要指定对应的角色 所以在加载之前应该先查询出所有的角色
+		m.addAttribute("rolelist", roleService.getRoleList());
+		return "user/update";
+	}
+	
+	/***
+	 * 删除用户
+	 * @param m 存储值用的model
+	 * @param user_id 用户id
+	 * @return
+	 */
+	@RequestMapping("/deluser")
+	public String delUser(Model m,Integer user_id,HttpSession session){
+		User user=(User) session.getAttribute("user");
+		if(user_id==user.getUser_id()){
+			return "user/userlist";
+		}
+		int result=userService.delUser(user_id);
+		m.addAttribute("rolelist", roleService.getRoleList());
+		return "user/savedel";
+	}
+	
+	/***
+	 * 根据页码查询用户列表
+	 * @param index 当前页码
+	 * @param user_name 用户名
+	 * @param role_id 角色id
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/getuserlist")
+	public Page getUserList(Integer index, String user_name, Integer role_id) {
+		return userService.getUserList(index, user_name, role_id);
+	}
+	
+	/***
+	 * 跳转到用户分页列表
+	 * @param m 存储值用的model
+	 * @param user 用户的实体
+	 * @return
+	 */
+	@RequestMapping("/touserlist")
+	public String toUserList(Model m, User user) {
+		// 因为显示用户列表时  有一个角色的模糊查询功能
+		//需要指定对应的角色 所以在加载用户列表页面之前应该先查询出所有的角色
+		m.addAttribute("rolelist", roleService.getRoleList());
+		return "user/userlist";
+	}	
+
+}

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.dao.ChangeAttractionsDao">
+	<select id="getAttractionsList" parameterType="int" resultType="attractions">
+	select a.* from tbl_attractions as a join tbl_beat as b on a.beat_id=b.beat_id where attractions_id=${attractions_id}
+	</select>
+	<select id="getAttractionsListCount" parameterType="attractions" resultType="attractions">
+ 		select a.*,b.beat_name,b.hotNum  from tbl_attractions as a join tbl_beat as b on a.beat_id=b.beat_id 
+ 		<where>
+ 		
+	 			<if test="attractions_name!=null and attractions_name!=''">
+	 				and	a.attractions_name = #{attractions_name} 
+	 			</if>
+	 			<!--  <if test="b.beat_name!=null and b.beat_name!=0">
+	 				and b.beat_name = #{beat_name}
+	 				
+	 			</if>
+	 			-->
+ 			
+ 		</where>
+ 	</select>
+ 	<!-- 获取景点id -->
+ 	<select id="getUserById" parameterType="int" resultMap="baseuser1">
+ 		select * from tbl_attractions a join tbl_beat b
+ 		on a.beat_id=b.beat_id
+ 		where u.beat_id=#{beat_id}
+ 	</select>
+ 	<update id="upAttractions" parameterType="attractions" >
+ 		update tbl_attractions 
+ 		<set>
+ 			<if test="attractions_name!=null and attractions_name!=''">
+ 				attractions_name=#{attractions_name},
+ 			</if>
+ 			<if test="attractions_hot!=null and attractions_hot!=0">
+ 				attractions_hot=#{attractions_hot},
+ 			</if>
+ 			<if test="attractions_img!=null and attractions_img!=''">
+ 				attractions_img=#{attractions_img},
+ 			</if>
+ 			<if test="atttractions_introduce!=null and atttractions_introduce!=''">
+ 				atttractions_introduce=#{atttractions_introduce},
+ 			</if>
+ 			<if test="beat.beat_id!=null and beat.beat_id!=0">
+ 				beat_id=#{beat.beat_id},
+ 			</if>
+ 			<if test="attractions_commentNum!=null and attractions_commentNum!=''">
+ 				attractions_commentNum=#{attractions_commentNum},
+ 			</if>
+ 		</set>
+ 		where attractions_id = #{attractions_id}
+ 		
+ 	</update>
+ 	<select id="getAttractionsListFind" parameterType="map" resultType="long">
+ 	
+		select count(1) from tbl_attractions as a join tbl_beat as b on a.beat_id=b.beat_id
+		<where>
+			<if test="attractions_name!=null and attractions_name!=''">
+				and attractions_name like concat('%',#{attractions_name},'%')
+			</if>
+			<if test="beat_name!=null and beat_name!=''">
+				and beat_name like concat('%',#{beat_name},'%')
+			</if>			
+		</where>
+ 	</select>
+ 	<resultMap type="attractions" id="baseuser1">
+		<id property="attractions_id" column="attractions_id"/>
+		<result property="attractions_name" column="attractions_name"/>
+		<result property="attractions_hot" column="attractions_hot"/>
+		<result property="attractions_img" column="attractions_img"/>
+		<result property="atttractions_introduce" column="atttractions_introduce"/>
+		<result property="attractions_commentNum" column="attractions_commentNum"/>
+		
+		<association property="beat" javaType="beat">
+			<id property="beat_id" column="beat_id"/>
+			<result property="beat_name" column="beat_name"/>
+		</association>
+	</resultMap>
+</mapper>

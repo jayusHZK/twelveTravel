@@ -1,0 +1,8 @@
+package com.travel.service;
+
+import com.travel.po.Result;
+
+public interface SelectDetailService {
+	Result selectDetail(String attractions_name,String beat_name);
+	Result getAttractionsByhot();
+}

@@ -1,0 +1,67 @@
+$(function() {
+	$(".loginout").click(function() {
+		if (confirm('系统提示，您确定要退出本次登录吗?')) {
+			location.href ="/twelveTravel/changeuser/loginout";
+		}
+	});
+	$("#login").click(function(){
+		
+		//取数据,这里用到了用户名和密码
+			var user_name=$("#user_name").val();
+			var password=$("#password").val();
+		$.ajax({
+		url:"/twelveTravel/changeuser/login",
+		data:{user_name:user_name,password:password},
+		type:"post",
+		dataType:"json",
+		success:function(data){			
+			if(data.code==200){
+				location.reload();
+			}else if(data.code==400){
+				alert("用户名或密码错误");
+			}
+		}
+	
+		});
+	});
+	getStrate(1);
+	function getStrate(index) {
+		var beat_id=$("#beat_id").val();
+		$.post("/twelveTravel/detail/getstratebybeatid",{beat_id:beat_id,index:1},function(date){
+			$("#stratecount").text(date.count);
+			if(date.pageCount==0){
+				$("#lookMore").text("暂无评论");
+			};
+			if(date.obj.length<10){
+				$("#lookMore").text("到底了..");
+			}
+			console.log(date);
+			var html="";
+			$(date.obj).each(function() {
+				html+="<a href='/twelveTravel/detail/tostrate?strate_id="+this.strategy_id+"'><div style='width:1200px;border: 1px solid #ccc;height: 70px'>";
+				html+="<div style='width: 50px;height: 50px;float: left;margin: 10px'>";
+				html+="	<img style='width: 100%;height: 100%'  src='/twelveTravel/upload/"+this.user.headimg+"'>";
+				html+="</div>";
+				html+="<div style='float: left;width: 1000px;'>";
+				html+="<h3 style='margin: 0;margin-top: 10px;margin-left: 20px'>"+this.title+"</h3>";
+				html+="<div style='margin-top: 10px'>";
+				html+="<span style='margin-left: 20px'>"+this.readimgNum+"人看过</span>";
+				html+="<span style='margin-left: 700px'>"+this.user.user_name+"-"+timeConverter(this.strate_time)+"</span>";
+				html+="</div>";
+				html+="</div></div></a><div style='float:both'></div>";
+			});
+			$("#StrateDiv").append(html);
+			$("#lookMore").data("index",date.index);
+		},"json");
+	};
+	$("#lookMore").click(function() {
+		var index=$(this).data("index");
+		var index1=parseInt(index)+1;
+		getStrate(index1);
+	});
+	//将时间戳转换为时间
+	function timeConverter(time){
+		return new Date(parseInt(time)*1000).toLocaleString().replace(/:\d{1,2}$/,' ');
+	}
+	
+});

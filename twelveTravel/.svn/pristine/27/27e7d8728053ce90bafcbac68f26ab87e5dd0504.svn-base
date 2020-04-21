@@ -1,0 +1,55 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    
+    <title>My JSP 'select.jsp' starting page</title>
+    <script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+  </head>
+  
+  <body>
+    
+    <input type="hidden" id="key" value="${param.key }">
+    <div id="shopBox"></div>
+    <script type="text/javascript">
+    	$(function(){
+    		find();
+    		//查找与关键字相关的商品
+    		function find(){
+    			var data={"key":$("#key").val(),"type":"4"};
+    			$.ajax({
+    				"url":"ShopServlet",
+    				"data":data,
+    				"type":"POST",
+    				"dataType":"json",
+    				"success":function(_data){
+    					var html="";
+    					if(_data.code==200){
+    						$(_data.msg).each(function(){
+    							html+="<a href='ShopServlet?type=2&shop_id="+this.shop_id+"'><div class='d1'>";
+    							html+="<img style='max-width:100px;max-height:100px' src='"+this.shop_img+"'>";
+    							html+="<div>";
+    							html+="<span>"+this.shop_name+"</span>";
+    							html+="<span>原价："+this.shop_price+"</span>";
+    							html+="<span>折扣价："+this.shop_Zprice+"</span>";
+    							html+="</div></div></a>";
+    						});
+    					}else{
+    						html="没有找到任何";
+    					}
+    					$("#shopBox").empty().append(html);
+    				}
+    			});
+    			
+    		}
+    		
+    	});
+    </script>
+  </body>
+</html>

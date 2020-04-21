@@ -1,0 +1,166 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<title>My JSP 'attractions.jsp' starting page</title>
+<link href="${pageContext.request.contextPath }/css/bootstrap.css"
+	rel='stylesheet' type='text/css' />
+<link href="${pageContext.request.contextPath }/css/style1.css"
+	rel='stylesheet' type='text/css' />
+	<link href="${pageContext.request.contextPath }/css/cssh/beat.css"
+	rel='stylesheet' type='text/css' />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript"
+	src="${pageContext.request.contextPath }/js/jquery-1.10.2.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath }/js/login.js"></script>
+<script
+	src="${pageContext.request.contextPath }/js/jquery.easydropdown.js"></script>
+<script src="${pageContext.request.contextPath }/js/wow.min.js"></script>
+<link href="${pageContext.request.contextPath }/css/animate.css"
+	rel='stylesheet' type='text/css' />
+<script type="text/javascript" src="${pageContext.request.contextPath }/js/hh/beat.js"></script>
+<script type="application/x-javascript">
+	
+	 addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+		function hideURLbar(){ window.scrollTo(0,1); } 
+
+</script>
+<!-- //custom-theme -->
+<link href="${pageContext.request.contextPath }/css/cssh/bootstrap.css"
+	rel="stylesheet" type="text/css" media="all" />
+<link href="${pageContext.request.contextPath }/css/cssh/JiSlider.css"
+	rel="stylesheet">
+<%-- <link href="${pageContext.request.contextPath }/css/cssh/style.css" rel="stylesheet" type="text/css" media="all" /> --%>
+<link
+	href="${pageContext.request.contextPath }/css/cssh/font-awesome.css"
+	rel="stylesheet">
+<link href="http://fonts.googleapis.com/css?family=Montserrat:400,700"
+	rel="stylesheet">
+<link
+	href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic'
+	rel='stylesheet' type='text/css'>
+<script type="text/javascript">
+	new WOW().init();
+</script>
+
+</head>
+
+<body>
+	
+	
+	<!-- 获取区域id -->
+	<input type="hidden" value="${beatO.beat_id }" id="beat_id">
+	<!-- 从session获取用户id -->
+	<input type="hidden" value="${sessionScope.user.user_id }" id="user_id">  
+	<!-- 从session获取用户名称 -->
+	<input type="hidden" value="${sessionScope.user.user_name }" id="user_name">  
+	<!-- 从session获取用户头像 -->
+	<input type="hidden" value="${sessionScope.user.user_headimg }" id="user_headimg">  
+	<div class="header">
+		<div class="header-left">
+			<div class="logo">
+				<a href="index.html"><img
+					src="${pageContext.request.contextPath }/images/imagesh/logo.png"
+					alt="" /></a>
+			</div>
+			<div class="menu">
+				<a class="toggleMenu" href="#"><img
+					src="${pageContext.request.contextPath }/images/imagesh/nav.png"
+					alt="" /></a>
+
+				<script type="text/javascript"
+					src="${pageContext.request.contextPath }/js/responsive-nav.js"></script>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		<div class="header_right">
+			<!-- start search-->
+			<div class="search-box"></div>
+			<!----search-scripts---->
+			<script src="${pageContext.request.contextPath }/js/classie.js"></script>
+			<script src="${pageContext.request.contextPath }/js/uisearch.js"></script>
+			<script>
+				new UISearch(document.getElementById('sb-search'));
+			</script>
+			<!----//search-scripts---->
+			<div id="loginContainer">
+				<a href="#" id="loginButton"><img
+					src="${pageContext.request.contextPath }/images/imagesh/login.png"><span>login</span></a>
+				<div id="loginBox">
+					<form id="loginForm">
+						<fieldset id="body">
+						<fieldset>
+							<input type="hidden" name="action" value="/strate/toaddstrate">
+							</fieldset>
+							<fieldset>
+								<label for="email">Email Address</label> <input type="text"
+									name="email" id="email">
+							</fieldset>
+							<fieldset>
+								<label for="password">Password</label> <input type="password"
+									name="password" id="password">
+							</fieldset>
+							<input type="submit" id="login" value="Sign in"> <label
+								for="checkbox"><input type="checkbox" id="checkbox">
+								<i>Remember me</i></label>
+						</fieldset>
+						<span><a href="#">Forgot your password?</a></span>
+					</form>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+	<div style="margin: auto;height: 35px">
+		<h2 style="text-align: center;">说说你对${beatO.beat_name }的旅游心得</h2>
+	</div>
+	<div style="width: 650px;margin: auto; ">
+		<input id="title" type="text" style="width:250px "placeholder="为你的攻略拟一个标题">
+	</div>
+	<div style="width: 650px;height:450px;margin: auto;">
+		<textarea id="txt" style="border: 1px solid #ccc;resize:none"  rows="20" cols="85" placeholder="开始写入你的攻略..50字以上"></textarea>
+		<div id="issue" style="margin-left: 590px;background-color: #e94e38;text-align: center;font-size: 16px">发布</div>
+		
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			var user_id=$("#user_id").val();
+			if(user_id==null||user_id==""){
+				alert("请先登录");
+			}
+			$("#issue").click(function(){
+				var txt=$("#txt").val();
+				var title=$("#title").val();
+				if(txt.length<50){
+					alert("字数不足50");
+				}else if(title==null|| title==""){
+					alert("请输入标题");
+				}else{
+					var data={};
+					data.user_id=user_id;
+					data.txt=txt;
+					data.beat_id=$("#beat_id").val();
+					data.title=title;
+					console.log(data);
+					$.post("/twelveTravel/strate/addstrate",data,function(date){
+						console.log(date);
+						if(date.msg!=0 &&date.msg!="" && date.msg!=null){
+							alert("添加成功，将跳转至页面");
+							location.href="/twelveTravel/detail/tostrate?strate_id="+date.msg+"";
+						}else{
+							alert("添加失败");
+						}
+					},"json");
+				}
+			});
+		});
+		
+	</script>
+  </body>
+</html>

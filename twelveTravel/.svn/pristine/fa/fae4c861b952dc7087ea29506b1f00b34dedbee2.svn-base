@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.dao.ChangeDetailDao">
+   <!-- 在VO情况下不需要做映射,以防止业务不好拓展   需要定义jdbcType 需要实体和数据库字段的数据类型-->
+	<resultMap type="com.travel.vo.BeatVO"  id="BaseResultMap"  >
+		<id property="beat_id" column="beat_id"  jdbcType="INTEGER"/>
+		<result property="beat_name" column="beat_name" jdbcType="VARCHAR"/>
+		<result property="beat_img" column="beat_img" jdbcType="VARCHAR"/>
+		<result property="beat_introduce" column="beat_introduce" jdbcType="VARCHAR"/>
+		<result property="hotNum" column="hotNum"  jdbcType="VARCHAR"/>
+		<result property="headimg" column="headimg" jdbcType="VARCHAR" />
+	    <result property="province_id" column="province_id"   jdbcType="INTEGER"/> 
+	    <result property="province_name" column="province_name" jdbcType="VARCHAR"  /> 
+	</resultMap>
+	
+	<!--查询区域列表 -->
+ 	<select id="getBeatList"   parameterType="com.travel.vo.BeatVO"  resultMap="BaseResultMap" >
+ 	  	select  
+ 	  	a.beat_id,
+ 	  	a.beat_name,
+ 	  	a.beat_img,
+ 	  	a.beat_introduce,
+ 	  	a.hotNum,
+ 	  	a.province_id,
+ 	  	b.province_name
+		from tbl_beat  a ,tbl_province b 
+		 where  a.province_id=b.province_id 
+	  <if test="beat_name != null and '' != beat_name ">
+	     and  a.beat_name=#{beat_name}
+	  </if>
+	  <if test="beat_introduce != null and '' != beat_introduce ">
+	     and  a.beat_introduce like concat("%",#{beat_introduce},"%")
+	  </if>
+ 	</select>
+
+	<!-- 添加地区 -->
+	
+	<insert id="toaddbeat" parameterType="beat">
+	insert into tbl_beat
+	   (
+			beat_name,
+			beat_img,
+			beat_introduce,
+			hotNum,
+			province_id
+		)  
+		values
+		  (
+		  #{beat_name},
+		  #{beat_img},
+		  #{beat_introduce},
+		  #{hotNum}
+		  ,#{province_id}
+		  );
+
+	</insert>
+
+	 <select id="getBeatList1"  parameterType="int" resultType="beat"  >
+	   select *  from  tbl_beat b where province_id=#{province_id}
+	 
+	 </select>  
+
+	<select id="getProvinceList" parameterType="int" resultType="province">
+		select * from tbl_province where country_id=#{country_id}
+	</select>
+
+	<select id="getCountryList" resultType="country">
+	select country_id,country_name from tbl_country
+	</select>
+	<!-- 删除地区 -->
+	<delete id="delBeat" parameterType="int">
+	delete from tbl_beat where beat_id=#{beat_id}
+	</delete>
+	
+	
+	
+	
+	
+	<select id="getBeatById" resultType="beat">
+ 		select * from tbl_beat 
+ 	</select>
+ 	
+ 	<resultMap type="beat" id="baseuser">
+		<id property="beat_id" column="beat_id"/>
+		<result property="beat_name" column="beat_name"/>
+		<result property="beat_img" column="beat_img"/>
+		<result property="beat_introduce" column="beat_introduce"/>
+		<result property="hotNum" column="hotNum"/>
+		<result property="headimg" column="headimg"/>
+		
+		<association property="province" javaType="province">
+			<id property="province_id" column="province_id"/>
+			<result property="province_name" column="province_name"/>
+		</association>
+	</resultMap>
+	
+	<select id="getBeatInfo" resultType="beat"  parameterType="com.travel.po.Beat">
+ 		  select * from tbl_beat b
+ 		  <where>
+ 		  	<if test="beat_id!=null and beat_id!=''">
+ 					b.beat_id = #{beat_id} 
+ 			</if>
+ 		  </where>
+ 	</select>
+ 	
+
+	
+</mapper>

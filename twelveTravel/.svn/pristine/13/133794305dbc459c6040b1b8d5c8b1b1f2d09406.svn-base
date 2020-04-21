@@ -1,0 +1,26 @@
+package com.travel.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.travel.po.Beat;
+import com.travel.po.Country;
+import com.travel.po.Province;
+import com.travel.po.Result;
+import com.travel.po.ResultPage;
+
+
+public interface ChangeDetailService {
+	Beat getBeatById(Integer beat_id);
+	int toaddbeat(Beat beat);
+	Result getProvinceList(Integer country_id);
+	List<Country> getCountryList();
+	ResultPage getBeatList(Integer index,String beat_name,String province_name);
+	List<Beat> getBeatListByIndex(Object obj);
+	Long getBeatListCount(Map map);
+
+	 int delBeat(Integer beat_id);
+	 Result getBeatList1(Integer province_id);
+
+
+}

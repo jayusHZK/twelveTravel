@@ -1,0 +1,172 @@
+package com.travel.service.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.travel.dao.DetailDao;
+import com.travel.po.Attractions;
+import com.travel.po.Beat;
+import com.travel.po.Page;
+import com.travel.po.Result;
+import com.travel.po.Strate;
+import com.travel.service.DetailService;
+import com.travel.util.TimeConverter;
+
+@Service
+public class DetailServiceImpl implements DetailService {
+	@Autowired
+	private DetailDao detailDao;
+	
+
+	@Override
+	@Transactional
+	//根据id获取区域详情
+	public Beat getBeatByID(Integer beat_id) {
+		//此区域浏览量+1
+		detailDao.beatHotNum(beat_id);
+		return detailDao.getBeatByID(beat_id);
+	}
+
+	@Override
+	//获取区域内景点
+	public Result getAttrList(Integer beat_id) {
+		Result r=new Result();
+		r.setMsg(detailDao.getAttrList(beat_id));
+		return r;
+	}
+	//获取区域评论
+	@Override
+	@Transactional
+	public Result getBeatComment(Integer beat_id, Integer index) {
+		Result r=new Result();
+		Page p=new Page();
+		p.setIndex(index);
+		p.setSize(10);
+		p.setCount(detailDao.getCommentCount(beat_id));
+		p.setPageCount((int)Math.ceil((double)p.getCount()/p.getSize()));
+		Map<String, Object> map=new HashMap<String, Object>();
+		map.put("index", (index-1)*10);
+		map.put("beat_id", beat_id);
+		map.put("size", p.getSize());
+		p.setObj(detailDao.getBeatComment(map));
+		r.setMsg(p);
+		return r;
+	}
+	//添加区域评论
+	@Transactional
+	@Override
+	public Result addBeatComment(Integer beat_id, Integer user_id, String txt) {
+		Result r=new Result();
+		Map<String, Object> map=new HashMap<String, Object>();
+		map.put("beat_id", beat_id);
+		map.put("user_id", user_id);
+		map.put("txt", txt);
+		map.put("time", System.currentTimeMillis()/1000);
+		if(detailDao.addBeatComment(map)>0){
+			detailDao.addBeatCommentCount(beat_id);
+			r.setCode(200);
+		}else{
+			r.setCode(400);
+		}
+		return r;
+	}
+	//获取景点详情
+	@Transactional
+	@Override
+	public Attractions getAttrByID(Integer attr_id) {
+		detailDao.addAttrHot(attr_id);
+		return detailDao.getAttrByID(attr_id);
+	}
+	//获取景点评论
+	@Override
+	public Result getAttrCommentByID(Integer attr_id, Integer index) {
+		Result r=new Result();
+		Page p=new Page();
+		p.setIndex(index);
+		p.setSize(10);
+		p.setCount(detailDao.getAttrCommentCount(attr_id));
+		p.setPageCount((int)Math.ceil((double)p.getCount()/p.getSize()));
+		Map<String, Object> map=new HashMap<String, Object>();
+		map.put("index", (index-1)*10);
+		map.put("attr_id", attr_id);
+		map.put("size", p.getSize());
+		p.setObj(detailDao.getAttrComment(map));
+		r.setMsg(p);
+		return r;
+	}
+	//添加景点评论
+	@Override
+	public Result addAttrComment(Integer attr_id, Integer user_id,
+			String comment) {
+		Result r=new Result();
+		Map<String, Object> map=new HashMap<String, Object>();
+		map.put("attr_id", attr_id);
+		map.put("user_id", user_id);
+		map.put("txt", comment);
+		map.put("time", System.currentTimeMillis()/1000);
+		if(detailDao.addAttrComment(map)>0){
+			detailDao.addAttrCommentCount(attr_id);
+			r.setCode(200);
+		}else{
+			r.setCode(400);
+		}
+		return r;
+	}
+	//获取攻略详情
+	@Transactional
+	@Override
+	public Strate getStrateByID(Integer beat_id) {
+		Strate s=detailDao.getStrateByID(beat_id);
+		//攻略浏览量+1
+		detailDao.addStrateLeadNum(s.getStrategy_id());
+		TimeConverter timeConverter=new TimeConverter();
+		s.setTime(timeConverter.NumIsTime(s.getStrate_time()));
+		return s;
+	}
+	
+
+	
+
+	
+	//获取攻略评论
+	@Override
+	public Result getStrateComment(Integer strate_id, Integer index) {
+		Result r=new Result();
+		Page p=new Page();
+		p.setIndex(index);
+		p.setSize(10);
+		p.setCount(detailDao.getStrateCommentCount(strate_id));
+		p.setPageCount((int)Math.ceil((double)p.getCount()/p.getSize()));
+		Map<String, Object> map=new HashMap<String, Object>();
+		map.put("index", (index-1)*10);
+		map.put("strate_id", strate_id);
+		map.put("size", p.getSize());
+		p.setObj(detailDao.getStrateComment(map));
+		r.setMsg(p);
+		return r;
+	}
+	//添加攻略评论
+	@Override
+	@Transactional
+	public Result addStrateComment(Integer strate_id, Integer user_id,
+			String comment) {
+		Result r=new Result();
+		Map<String, Object> map=new HashMap<String, Object>();
+		map.put("strate_id", strate_id);
+		map.put("user_id", user_id);
+		map.put("txt", comment);
+		map.put("time", System.currentTimeMillis()/1000);
+		if(detailDao.addStrateComment(map)>0){
+			detailDao.addStrateCommentNum(strate_id);
+			r.setCode(200);
+		}else{
+			r.setCode(400);
+		}
+		return r;
+	}
+	
+}
